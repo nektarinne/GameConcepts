@@ -11,8 +11,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class DropTableTest {
 
-    private static final Item ITEM_1 = new Item("item_1", "item 1");
-    private static final Item ITEM_2 = new Item("item_2", "item 2");
+    private static final Item ITEM_1 = Item.builder().name("item 1").category(Item.Category.EQUIPMENT).build();
+    private static final Item ITEM_2 = Item.builder().name("item 2").category(Item.Category.CONSUMABLE).build();
     private static final double ITEM_1_PROBA = 0.33;
     private static final double ITEM_2_PROBA = 0.05;
 

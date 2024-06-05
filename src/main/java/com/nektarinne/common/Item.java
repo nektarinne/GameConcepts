@@ -1,33 +1,55 @@
 package com.nektarinne.common;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 /**
  * Represents an Item.
  */
 public class Item implements Comparable<Item> {
 
-    private static final Comparator<Item> COMPARATOR = Comparator.comparing(Item::id);
-    /**
-     * Item's id. Should be unique.
-     */
-    private final String id;
-    /**
-     * Item's name.
-     */
+    static final int DEFAULT_STACK_SIZE = 64;
+    private static final Comparator<Item> COMPARATOR = Comparator.comparing(Item::category).thenComparing(Item::name);
     private final String name;
+    private final Category category;
+    /**
+     * Defaults to {@link #DEFAULT_STACK_SIZE}.
+     */
+    private final int stackSize;
 
-    public Item(String id, String name) {
-        this.id = id;
-        this.name = name;
+    private Item(Builder builder) {
+        this.name = Objects.requireNonNull(builder.name, "Unable to create an item using " + builder + ": the name cannot be null");
+        this.category = Objects.requireNonNull(builder.category, "Unable to create an item using " + builder + ": the category cannot be null");
+        this.stackSize = builder.stackSize;
     }
 
-    public String id() {
-        return id;
+    public static Builder builder() {
+        return new Builder();
     }
 
     public String name() {
         return name;
+    }
+
+    public Category category() {
+        return category;
+    }
+
+    public int stackSize() {
+        return stackSize;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return stackSize == item.stackSize && Objects.equals(name, item.name) && category == item.category;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, category, stackSize);
     }
 
     @Override
@@ -37,7 +59,44 @@ public class Item implements Comparable<Item> {
 
     @Override
     public String toString() {
-        return "%s{id='%s', name='%s'}"
-                .formatted(getClass().getSimpleName(), id, name);
+        return "%s{name='%s', category=%s, stackSize=%d}"
+                .formatted(getClass().getSimpleName(), name, category, stackSize);
+    }
+
+    public enum Category {
+        // values need to be declared in the sorting order
+        EQUIPMENT,
+        CONSUMABLE,
+    }
+
+    public static class Builder {
+        private String name;
+        private Category category;
+        private int stackSize = DEFAULT_STACK_SIZE;
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder category(Category category) {
+            this.category = category;
+            return this;
+        }
+
+        public Builder stackSize(int stackSize) {
+            this.stackSize = stackSize;
+            return this;
+        }
+
+        public Item build() {
+            return new Item(this);
+        }
+
+        @Override
+        public String toString() {
+            return "%s{name='%s', category=%s, stackSize=%s}"
+                    .formatted(getClass().getSimpleName(), name, category, stackSize);
+        }
     }
 }
