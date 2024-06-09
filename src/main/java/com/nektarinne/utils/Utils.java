@@ -31,6 +31,7 @@ public class Utils {
         map.entrySet()
                 .stream()
                 .sorted(Map.Entry.<T, Integer>comparingByValue().thenComparing(Map.Entry.comparingByKey()))
-                .forEach(entry -> logger.info(format.formatted(entry.getValue(), entry.getKey())));
+                .map(it -> format.formatted(it.getValue(), it.getKey()))
+                .forEach(logger::info);
     }
 }
