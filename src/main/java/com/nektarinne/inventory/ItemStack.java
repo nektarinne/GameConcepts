@@ -38,6 +38,10 @@ public class ItemStack implements Comparable<ItemStack> {
                         .reversed());
     }
 
+    public static int compare(ItemStack o1, ItemStack o2) {
+        return o1 == null ? 1 : o1.compareTo(o2);
+    }
+
     public Item item() {
         return item;
     }
@@ -106,6 +110,9 @@ public class ItemStack implements Comparable<ItemStack> {
 
     @Override
     public int compareTo(ItemStack other) {
+        if (other == null) {
+            return -1;
+        }
         return COMPARATOR.compare(this, other);
     }
 

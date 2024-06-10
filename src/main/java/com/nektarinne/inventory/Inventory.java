@@ -10,8 +10,8 @@ import java.util.stream.Stream;
 public class Inventory {
 
     private static final int DEFAULT_NB_OF_SLOTS = 27;
-    private final Slot[] slots;
     private final int nbOfSlots;
+    private Slot[] slots;
 
     private Inventory(Builder builder) {
         if (builder.nbOfSlots < 0) {
@@ -41,6 +41,12 @@ public class Inventory {
             throw new IllegalArgumentException("SlotIndex '" + slotIndex + "' is outside [0, " + (nbOfSlots - 1) + "]");
         }
         return slots[slotIndex];
+    }
+
+    public void sort() {
+        this.slots = Stream.of(this.slots)
+                .sorted()
+                .toArray(Slot[]::new);
     }
 
     public ItemStack getItemStack(int slotIndex) {

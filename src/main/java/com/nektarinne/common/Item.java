@@ -27,6 +27,10 @@ public class Item implements Comparable<Item> {
         return new Builder();
     }
 
+    public static int compare(Item o1, Item o2) {
+        return o1 == null ? 1 : o1.compareTo(o2);
+    }
+
     public String name() {
         return name;
     }
@@ -54,6 +58,9 @@ public class Item implements Comparable<Item> {
 
     @Override
     public int compareTo(Item other) {
+        if (other == null) {
+            return -1;
+        }
         return COMPARATOR.compare(this, other);
     }
 

@@ -2,7 +2,7 @@ package com.nektarinne.inventory;
 
 import com.nektarinne.common.Item;
 
-public class Slot {
+public class Slot implements Comparable<Slot> {
 
 
     private Item item;
@@ -40,18 +40,29 @@ public class Slot {
     }
 
     public boolean isEmpty() {
-        return this.item == null
-                && (
-                this.itemStack == null
-                        || this.itemStack.item() == null // should not happen
-                        || this.itemStack.quantity() == 0
-        );
+        return this.item == null && this.itemStack == null;
     }
 
     @Override
     public String toString() {
         return "%s{item=%s, itemStack=%s}"
                 .formatted(getClass().getSimpleName(), item, itemStack);
+    }
+
+    @Override
+    public int compareTo(Slot o) {
+        if (o == null) {
+            return -1;
+        }
+        int result = Boolean.compare(this.isEmpty(), o.isEmpty());
+        if (result != 0) {
+            return result;
+        }
+        result = Item.compare(this.item, o.item);
+        if (result != 0) {
+            return result;
+        }
+        return ItemStack.compare(this.itemStack, o.itemStack);
     }
 
     public static class Builder {

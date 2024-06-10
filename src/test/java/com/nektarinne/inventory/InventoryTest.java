@@ -19,6 +19,20 @@ class InventoryTest {
     private Inventory underTest;
 
     @Test
+    void sort() {
+        underTest = Inventory.builder().withNbOfSlots(3).build();
+        underTest.add(0, ItemStack.builder(oakLog).quantity(5).build());
+        underTest.add(2, ItemStack.builder(oakPlank).quantity(4).build());
+        Slot slot0 = underTest.getSlot(0);
+        Slot slot1 = underTest.getSlot(1);
+        Slot slot2 = underTest.getSlot(2);
+        underTest.sort();
+        assertThat(underTest.getSlot(0)).isEqualTo(slot0);
+        assertThat(underTest.getSlot(1)).isEqualTo(slot2);
+        assertThat(underTest.getSlot(2)).isEqualTo(slot1);
+    }
+
+    @Test
     void add_newStackBecauseDifferentCategory() {
         underTest = Inventory.builder().withNbOfSlots(3).build();
         ItemStack result1 = underTest.add(ItemStack.builder(oakLog).quantity(5).build());
