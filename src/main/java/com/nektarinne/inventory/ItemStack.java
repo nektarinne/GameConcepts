@@ -15,12 +15,20 @@ public class ItemStack implements Comparable<ItemStack> {
     private int quantity;
 
     private ItemStack(Builder builder) {
-        this.item = Objects.requireNonNull(builder.item);
-        this.quantity(Objects.requireNonNull(builder.quantity));
+        this(builder.item, builder.quantity);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    private ItemStack(Item item, Integer quantity) {
+        this.item = Objects.requireNonNull(item);
+        this.quantity(Objects.requireNonNull(quantity));
+    }
+
+    public static Builder builder(Item item) {
+        return new Builder(item);
+    }
+
+    static ItemStack from(ItemStack other) {
+        return new ItemStack(other.item(), other.quantity());
     }
 
     private static Comparator<ItemStack> createComparator() {
@@ -64,7 +72,7 @@ public class ItemStack implements Comparable<ItemStack> {
      * <li>an {@link ItemStack} if the stack to add has not been fully absorbed.
      */
     public ItemStack add(ItemStack other) {
-        if (this.item != other.item) {
+        if (!Objects.equals(this.item, other.item)) {
             throw UnableToStackTwoDifferentItems.create(this.item, other.item);
         }
         if (isMaxSize()) {
@@ -76,7 +84,7 @@ public class ItemStack implements Comparable<ItemStack> {
         }
         int diff = this.item.stackSize() - this.quantity;
         this.quantity = this.item.stackSize();
-        return ItemStack.builder().item(this.item).quantity(other.quantity - diff).build();
+        return ItemStack.builder(this.item).quantity(other.quantity - diff).build();
     }
 
     public String repr() {
@@ -108,13 +116,11 @@ public class ItemStack implements Comparable<ItemStack> {
     }
 
     public static class Builder {
-        private Item item;
+        private final Item item;
         private Integer quantity;
 
-        public Builder item(Item item) {
-            Objects.requireNonNull(item);
-            this.item = item;
-            return this;
+        Builder(Item item) {
+            this.item = Objects.requireNonNull(item);
         }
 
         public Builder quantity(int quantity) {
@@ -124,6 +130,12 @@ public class ItemStack implements Comparable<ItemStack> {
 
         public ItemStack build() {
             return new ItemStack(this);
+        }
+
+        @Override
+        public String toString() {
+            return "%s{item=%s, quantity=%d}"
+                    .formatted(getClass().getSimpleName(), item, quantity);
         }
     }
 }

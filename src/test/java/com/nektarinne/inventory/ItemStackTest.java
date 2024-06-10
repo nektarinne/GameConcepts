@@ -12,31 +12,30 @@ class ItemStackTest {
     private static final Item ITEM_1 = Item.builder().name("item 1").category(Item.Category.EQUIPMENT).build();
 
     @Test
-    void itemStack_invalidName() {
-        assertThatNullPointerException().isThrownBy(() -> ItemStack.builder().item(null).quantity(1).build());
-        assertThatNullPointerException().isThrownBy(() -> ItemStack.builder().quantity(1).build());
+    void itemStack_invalidItem() {
+        assertThatNullPointerException().isThrownBy(() -> ItemStack.builder(null).quantity(1).build());
     }
 
     @Test
     void itemStack_invalidQuantity() {
-        assertThatNullPointerException().isThrownBy(() -> ItemStack.builder().item(ITEM_1).build());
+        assertThatNullPointerException().isThrownBy(() -> ItemStack.builder(ITEM_1).build());
 
-        assertThatIllegalArgumentException().isThrownBy(() -> ItemStack.builder().item(ITEM_1).quantity(0).build());
-        assertThatIllegalArgumentException().isThrownBy(() -> ItemStack.builder().item(ITEM_1).quantity(-1).build());
-        assertThatIllegalArgumentException().isThrownBy(() -> ItemStack.builder().item(ITEM_1).quantity(ITEM_1.stackSize() + 1).build());
+        assertThatIllegalArgumentException().isThrownBy(() -> ItemStack.builder(ITEM_1).quantity(0).build());
+        assertThatIllegalArgumentException().isThrownBy(() -> ItemStack.builder(ITEM_1).quantity(-1).build());
+        assertThatIllegalArgumentException().isThrownBy(() -> ItemStack.builder(ITEM_1).quantity(ITEM_1.stackSize() + 1).build());
     }
 
     @Test
     void isMaxSize() {
-        assertThat(ItemStack.builder().item(ITEM_1).quantity(1).build().isMaxSize()).isFalse();
-        assertThat(ItemStack.builder().item(ITEM_1).quantity(ITEM_1.stackSize()).build().isMaxSize()).isTrue();
-        assertThat(ItemStack.builder().item(ITEM_1).quantity(ITEM_1.stackSize() - 1).build().isMaxSize()).isFalse();
+        assertThat(ItemStack.builder(ITEM_1).quantity(1).build().isMaxSize()).isFalse();
+        assertThat(ItemStack.builder(ITEM_1).quantity(ITEM_1.stackSize()).build().isMaxSize()).isTrue();
+        assertThat(ItemStack.builder(ITEM_1).quantity(ITEM_1.stackSize() - 1).build().isMaxSize()).isFalse();
     }
 
     @Test
     void add() {
-        ItemStack underTest = ItemStack.builder().item(ITEM_1).quantity(1).build();
-        ItemStack other = ItemStack.builder().item(ITEM_1).quantity(1).build();
+        ItemStack underTest = ItemStack.builder(ITEM_1).quantity(1).build();
+        ItemStack other = ItemStack.builder(ITEM_1).quantity(1).build();
 
         ItemStack result = underTest.add(other);
 
@@ -47,8 +46,8 @@ class ItemStackTest {
 
     @Test
     void add_alreadyAtStackSize() {
-        ItemStack underTest = ItemStack.builder().item(ITEM_1).quantity(ITEM_1.stackSize()).build();
-        ItemStack other = ItemStack.builder().item(ITEM_1).quantity(1).build();
+        ItemStack underTest = ItemStack.builder(ITEM_1).quantity(ITEM_1.stackSize()).build();
+        ItemStack other = ItemStack.builder(ITEM_1).quantity(1).build();
 
         ItemStack result = underTest.add(other);
 
@@ -60,8 +59,8 @@ class ItemStackTest {
 
     @Test
     void add_sumIsStackSize() {
-        ItemStack underTest = ItemStack.builder().item(ITEM_1).quantity(ITEM_1.stackSize() - 3).build();
-        ItemStack other = ItemStack.builder().item(ITEM_1).quantity(3).build();
+        ItemStack underTest = ItemStack.builder(ITEM_1).quantity(ITEM_1.stackSize() - 3).build();
+        ItemStack other = ItemStack.builder(ITEM_1).quantity(3).build();
 
         ItemStack result = underTest.add(other);
 
@@ -73,8 +72,8 @@ class ItemStackTest {
     @Test
     void add_sumIsHigherThanStackSize() {
         int missingQuantityForStackSize = 3;
-        ItemStack underTest = ItemStack.builder().item(ITEM_1).quantity(ITEM_1.stackSize() - missingQuantityForStackSize).build();
-        ItemStack other = ItemStack.builder().item(ITEM_1).quantity(missingQuantityForStackSize + 2).build();
+        ItemStack underTest = ItemStack.builder(ITEM_1).quantity(ITEM_1.stackSize() - missingQuantityForStackSize).build();
+        ItemStack other = ItemStack.builder(ITEM_1).quantity(missingQuantityForStackSize + 2).build();
 
         ItemStack result = underTest.add(other);
 
@@ -87,10 +86,10 @@ class ItemStackTest {
     @Test
     void repr() {
         ItemStack underTest;
-        underTest = ItemStack.builder().item(ITEM_1).quantity(1).build();
+        underTest = ItemStack.builder(ITEM_1).quantity(1).build();
         assertThat(underTest.repr()).isEqualTo(1 + "x" + ITEM_1);
 
-        underTest = ItemStack.builder().item(ITEM_1).quantity(ITEM_1.stackSize()).build();
+        underTest = ItemStack.builder(ITEM_1).quantity(ITEM_1.stackSize()).build();
         assertThat(underTest.repr()).isEqualTo(ITEM_1.stackSize() + "x" + ITEM_1);
     }
 }
