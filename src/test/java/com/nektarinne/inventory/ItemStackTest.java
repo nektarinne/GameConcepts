@@ -92,4 +92,29 @@ class ItemStackTest {
         underTest = ItemStack.builder(ITEM_1).quantity(ITEM_1.stackSize()).build();
         assertThat(underTest.repr()).isEqualTo(ITEM_1.stackSize() + "x" + ITEM_1);
     }
+
+    @Test
+    void compare() {
+        ItemStack itemStack = ItemStack.builder(ITEM_1).quantity(1).build();
+        assertThat(ItemStack.compare(itemStack, itemStack)).isZero();
+        assertThat(ItemStack.compare(null, itemStack)).isEqualTo(1);
+        assertThat(ItemStack.compare(itemStack, null)).isEqualTo(-1);
+    }
+
+    @Test
+    void toStringTest() {
+        // For coverage completion
+        String result = ItemStack.builder(ITEM_1).toString();
+        assertThat(result).isNotBlank();
+        assertThat(result).doesNotContain("@");
+    }
+
+    @Test
+    void builder_toString() {
+        // For coverage completion
+        String result = ItemStack.builder(ITEM_1).quantity(1).build().toString();
+        assertThat(result).isNotBlank();
+        assertThat(result).doesNotContain("@");
+
+    }
 }
