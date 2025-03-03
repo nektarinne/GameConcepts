@@ -2,16 +2,16 @@ package com.nektarinne.inventory;
 
 import com.nektarinne.common.Item;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public class Inventory {
 
     private static final int DEFAULT_NB_OF_SLOTS = 27;
     private final int nbOfSlots;
-    private Slot[] slots;
+    private final List<Slot> slots;
 
     private Inventory(Builder builder) {
         if (builder.nbOfSlots < 0) {
@@ -22,12 +22,10 @@ public class Inventory {
             throw new IllegalArgumentException("nbOfSlots '%d' is less than slots size '%d'"
                     .formatted(builder.nbOfSlots, builder.slots.size()));
         }
-        this.slots = new Slot[builder.nbOfSlots];
-        for (int i = 0; i < builder.slots.size(); i++) {
-            this.slots[i] = builder.slots.get(i);
-        }
-        for (int i = builder.slots.size(); i < builder.nbOfSlots; i++) {
-            this.slots[i] = Slot.empty();
+        this.slots = new ArrayList<>(builder.slots);
+        // Ensure the list has the correct number of slots by adding empty slots if needed.
+        while (this.slots.size() < builder.nbOfSlots) {
+            this.slots.add(Slot.empty());
         }
         this.nbOfSlots = builder.nbOfSlots;
     }
@@ -40,13 +38,11 @@ public class Inventory {
         if (slotIndex < 0 || slotIndex >= nbOfSlots) {
             throw new IllegalArgumentException("SlotIndex '" + slotIndex + "' is outside [0, " + (nbOfSlots - 1) + "]");
         }
-        return slots[slotIndex];
+        return slots.get(slotIndex);
     }
 
     public void sort() {
-        this.slots = Stream.of(this.slots)
-                .sorted()
-                .toArray(Slot[]::new);
+        this.slots.sort(null);  // assuming Slot implements Comparable
     }
 
     public ItemStack getItemStack(int slotIndex) {
@@ -62,7 +58,7 @@ public class Inventory {
         if (itemStack.quantity() == 0) {
             throw EmptyItemStackException.create(itemStack);
         }
-        List<Slot> candidates = Stream.of(this.slots)
+        List<Slot> candidates = slots.stream()
                 .filter(slot -> !slot.isEmpty())
                 .filter(slot -> Objects.equals(slot.item(), itemStack.item()) || Objects.equals(slot.itemStack().item(), itemStack.item()))
                 .toList();
@@ -77,7 +73,7 @@ public class Inventory {
                 return null;
             }
         }
-        Optional<Slot> emptySlot = Stream.of(this.slots)
+        Optional<Slot> emptySlot = slots.stream()
                 .filter(Slot::isEmpty)
                 .findFirst();
         if (emptySlot.isPresent()) {
@@ -91,7 +87,7 @@ public class Inventory {
         if (slotIndex < 0 || slotIndex >= nbOfSlots) {
             throw new IllegalArgumentException("SlotIndex '%d' is outside [0, %d]".formatted(slotIndex, nbOfSlots - 1));
         }
-        Slot dst = slots[slotIndex];
+        Slot dst = slots.get(slotIndex);
         if (dst.item() == null || Objects.equals(dst.item(), itemStack.item())) {
             if (dst.itemStack() == null) {
                 dst.itemStack(ItemStack.from(itemStack));
@@ -109,11 +105,11 @@ public class Inventory {
         if (slotIndex < 0 || slotIndex >= nbOfSlots) {
             throw new IllegalArgumentException("SlotIndex '%d' is outside [0, %d]".formatted(slotIndex, nbOfSlots - 1));
         }
-        if (slots[slotIndex].isEmpty()) {
+        if (slots.get(slotIndex).isEmpty()) {
             return null;
         }
-        ItemStack itemStack = slots[slotIndex].itemStack();
-        slots[slotIndex].itemStack(null);
+        ItemStack itemStack = slots.get(slotIndex).itemStack();
+        slots.get(slotIndex).itemStack(null);
         return itemStack;
     }
 
