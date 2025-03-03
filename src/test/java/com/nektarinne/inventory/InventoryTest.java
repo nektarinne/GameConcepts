@@ -65,6 +65,49 @@ class InventoryTest {
     }
 
     @Test
+    void lock() {
+        ItemStack itemStack = ItemStack.builder(oakPlank).quantity(5).build();
+        underTest = Inventory.builder().withNbOfSlots(1).build();
+        underTest.add(0, ItemStack.builder(oakLog).quantity(5).build());
+
+        underTest.lock(0);
+        underTest.remove(0);
+        assertThat(underTest.getItem(0)).isEqualTo(oakLog);
+        assertThat(underTest.getItemStack(0)).isNull();
+
+        ItemStack result = underTest.add(0, itemStack);
+        assertThat(itemStack).isEqualTo(result);
+    }
+
+    @Test
+    void lock_empty() {
+        underTest = Inventory.builder().withNbOfSlots(1).build();
+        assertThatIllegalArgumentException().isThrownBy(() -> underTest.lock(0));
+    }
+
+    @Test
+    void unlock() {
+        ItemStack itemStack = ItemStack.builder(oakPlank).quantity(5).build();
+        underTest = Inventory.builder().withNbOfSlots(1).build();
+        underTest.add(0, ItemStack.builder(oakLog).quantity(5).build());
+        underTest.lock(0);
+        underTest.remove(0);
+        ItemStack result = underTest.add(0, itemStack);
+        assertThat(itemStack).isEqualTo(result);
+
+        underTest.unlock(0);
+
+        result = underTest.add(0, itemStack);
+        assertThat(result).isNull();
+    }
+
+    @Test
+    void unlock_empty() {
+        underTest = Inventory.builder().withNbOfSlots(1).build();
+        assertThatIllegalArgumentException().isThrownBy(() -> underTest.unlock(0));
+    }
+
+    @Test
     void sort() {
         underTest = Inventory.builder().withNbOfSlots(3).build();
         underTest.add(0, ItemStack.builder(oakLog).quantity(5).build());

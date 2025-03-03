@@ -53,6 +53,22 @@ public class Inventory {
         return this.getSlot(slotIndex).item();
     }
 
+    public void lock(int slotIndex) {
+        Slot slot = this.getSlot(slotIndex);
+        if (slot.isEmpty()) {
+            throw new IllegalArgumentException("Unable to lock an empty slot");
+        }
+        slot.item(slot.itemStack().item());
+    }
+
+    public void unlock(int slotIndex) {
+        Slot slot = this.getSlot(slotIndex);
+        if (slot.isEmpty()) {
+            throw new IllegalArgumentException("Unable to unlock an empty slot");
+        }
+        slot.item(null);
+    }
+
     public ItemStack add(ItemStack itemStack) {
         Objects.requireNonNull(itemStack);
         if (itemStack.quantity() == 0) {
